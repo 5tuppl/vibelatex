@@ -1,0 +1,19 @@
+{
+  "name": "vibelatex",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A minimal LaTeX IDE with live latexmk compilation.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}

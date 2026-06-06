@@ -1,0 +1,17 @@
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.DS_Store
+workspace/*/build/
+workspace/*/*.aux
+workspace/*/*.bbl
+workspace/*/*.bcf
+workspace/*/*.blg
+workspace/*/*.fdb_latexmk
+workspace/*/*.fls
+workspace/*/*.log
+workspace/*/*.out
+workspace/*/*.run.xml
+workspace/*/*.synctex.gz

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VibeLaTeX Desktop</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body class="theme-dark">
+    <div class="app-shell">
+      <header class="toolbar">
+        <div class="brand">VibeLaTeX Desktop</div>
+        <button id="openProject" type="button" class="button">Open Project</button>
+        <button id="saveFile" type="button" class="button">Save</button>
+        <button id="compileFile" type="button" class="button">Compile</button>
+        <button id="downloadPdf" type="button" class="button" disabled>Download PDF</button>
+        <span id="vimMode" class="vim-badge" title="Vim mode is enabled. Use :w to save, :make to compile, jk to leave insert mode.">Vim</span>
+        <div id="projectPath" class="project-path">No project open</div>
+        <div id="status" class="status" role="status">Starting</div>
+        <button id="themeToggle" type="button" class="button ghost">Light</button>
+      </header>
+
+      <main class="main-grid">
+        <section class="editor-pane" aria-label="LaTeX editor">
+          <div id="editor"></div>
+        </section>
+
+        <section class="preview-pane" aria-label="PDF preview">
+          <div class="preview-toolbar">
+            <button id="prevPage" class="icon-button" type="button" title="Previous page">&lt;</button>
+            <span id="pageInfo" class="page-info">0 / 0</span>
+            <button id="nextPage" class="icon-button" type="button" title="Next page">&gt;</button>
+            <span class="toolbar-separator"></span>
+            <button id="zoomOut" class="icon-button" type="button" title="Zoom out">-</button>
+            <span id="zoomInfo" class="page-info">100%</span>
+            <button id="zoomIn" class="icon-button" type="button" title="Zoom in">+</button>
+          </div>
+          <div id="previewBody" class="preview-body">
+            <div id="previewEmpty" class="empty-state">Open a project to render its PDF.</div>
+            <canvas id="pdfCanvas"></canvas>
+            <div id="previewBusy" class="preview-busy" hidden>
+              <span class="spinner" aria-hidden="true"></span>
+              <span>Compiling</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <section class="console-pane" aria-label="Compiler console">
+        <div class="console-header">
+          <span>Vibe CLI</span>
+          <button id="clearConsole" type="button" class="button ghost compact">Clear</button>
+        </div>
+        <form id="cliForm" class="cli-form" autocomplete="off">
+          <span class="cli-prompt">vibe&gt;</span>
+          <input id="cliInput" class="cli-input" type="text" spellcheck="false" aria-label="Vibe CLI command" placeholder="help, init ~/paper, open, save, compile">
+        </form>
+        <div id="consoleOutput" class="console-output" role="log" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

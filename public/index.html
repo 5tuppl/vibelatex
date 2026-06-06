@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VibeLaTeX</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body class="theme-dark">
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">VibeLaTeX</div>
+        <label class="project-label" for="projectSelect">Project</label>
+        <select id="projectSelect" aria-label="Project"></select>
+        <span id="vimMode" class="vim-badge" title="Vim mode is enabled. Use :w to save, :make to compile, jk to leave insert mode.">Vim</span>
+        <button id="compileButton" class="button" type="button" title="Save and compile">Compile</button>
+        <div id="status" class="status" role="status">Idle</div>
+        <button id="themeToggle" class="button ghost" type="button" title="Toggle theme">Light</button>
+      </header>
+
+      <main class="main-grid">
+        <section class="editor-pane" aria-label="LaTeX editor">
+          <div id="editor"></div>
+        </section>
+
+        <section class="preview-pane" aria-label="PDF preview">
+          <div class="preview-toolbar">
+            <button id="prevPage" class="icon-button" type="button" title="Previous page">&lt;</button>
+            <span id="pageInfo" class="page-info">0 / 0</span>
+            <button id="nextPage" class="icon-button" type="button" title="Next page">&gt;</button>
+            <span class="toolbar-separator"></span>
+            <button id="zoomOut" class="icon-button" type="button" title="Zoom out">-</button>
+            <span id="zoomInfo" class="page-info">100%</span>
+            <button id="zoomIn" class="icon-button" type="button" title="Zoom in">+</button>
+          </div>
+          <div id="previewBody" class="preview-body">
+            <div id="previewEmpty" class="empty-state">Open a project to render its PDF.</div>
+            <canvas id="pdfCanvas"></canvas>
+            <div id="previewBusy" class="preview-busy" hidden>
+              <span class="spinner" aria-hidden="true"></span>
+              <span>Compiling</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <section class="console-pane" aria-label="Compiler console">
+        <div class="console-header">
+          <span>Console</span>
+          <button id="clearConsole" class="button ghost compact" type="button">Clear</button>
+        </div>
+        <div id="consoleOutput" class="console-output" role="log" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

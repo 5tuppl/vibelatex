@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "Main window permissions for VibeLaTeX Desktop.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:default",
+    "fs:default",
+    "shell:default",
+    "process:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "**/*" }]
+    }
+  ]
+}

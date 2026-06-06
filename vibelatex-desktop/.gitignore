@@ -1,0 +1,17 @@
+/src-tauri/target/
+/src-tauri/gen/
+/src-tauri/Cargo.lock
+/.idea/
+/.vscode/
+.DS_Store
+*.log
+**/build/
+**/*.aux
+**/*.bbl
+**/*.bcf
+**/*.blg
+**/*.fdb_latexmk
+**/*.fls
+**/*.out
+**/*.run.xml
+**/*.synctex.gz
