@@ -35,6 +35,8 @@ Open:
 http://localhost:3000
 ```
 
+For Docker deployment, see [docs/deployment.md](docs/deployment.md).
+
 ## Run Desktop App
 
 ```bash
@@ -94,6 +96,10 @@ For the desktop app, open or initialize any folder on disk that contains
 ```bash
 latexmk -pdf -interaction=nonstopmode -outdir=build main.tex
 ```
+
+If `latexmk` reports a previous failed invocation without rerunning TeX,
+VibeLaTeX retries once with `-g` so the console shows current diagnostics
+instead of stale failure state.
 
 - Socket.IO events report compiler status:
   - `compile:start`

@@ -12,7 +12,8 @@ Rust backend, the system webview, CodeMirror 6, PDF.js, and `latexmk`.
 - Auto-save after 1 second of idle typing and Ctrl/Cmd+S
 - Vim editor mode by default, including `:w`, `:make`, and `jk`/`jj`
 - `notify` watches `.tex`, `.bib`, `.cls`, and `.sty` files
-- `latexmk -pdf -outdir=build -interaction=nonstopmode main.tex`
+- `latexmk -pdf -outdir=build -interaction=nonstopmode main.tex`, with one `-g`
+  retry if `latexmk` reports a previous failed invocation without rerunning TeX
 - PDF refresh after successful compilation
 - Download button for saving the compiled PDF anywhere on disk
 - Clickable errors and warnings jump to the matching editor line

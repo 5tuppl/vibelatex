@@ -1,0 +1,25 @@
+services:
+  vibelatex:
+    build:
+      context: .
+    image: vibelatex:local
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+    volumes:
+      - vibelatex-workspace:/app/workspace
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 2g
+
+volumes:
+  vibelatex-workspace:

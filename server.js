@@ -9,11 +9,14 @@ const express = require('express');
 const { Server } = require('socket.io');
 
 const PORT = Number(process.env.PORT || 3000);
+const HOST = process.env.HOST || '0.0.0.0';
 const ROOT = __dirname;
 const PUBLIC_ROOT = path.join(ROOT, 'public');
 const WORKSPACE_ROOT = path.join(ROOT, 'workspace');
 const WATCH_EXTENSIONS = new Set(['.tex', '.bib', '.cls', '.sty']);
 const MAX_LOG_BYTES = 2 * 1024 * 1024;
+const LATEXMK_ARGS = ['-pdf', '-interaction=nonstopmode', '-outdir=build', 'main.tex'];
+const LATEXMK_FORCE_ARGS = ['-g', ...LATEXMK_ARGS];
 
 const app = express();
 const server = http.createServer(app);
@@ -28,6 +31,10 @@ let compileAgain = false;
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(PUBLIC_ROOT));
+
+app.get('/healthz', (_req, res) => {
+  res.json({ ok: true });
+});
 
 app.get('/api/project', async (_req, res, next) => {
   try {
@@ -240,8 +247,7 @@ async function compile() {
   await fsp.mkdir(path.join(project.root, 'build'), { recursive: true });
   io.emit('compile:start', { project: project.name, startedAt: Date.now() });
 
-  const args = ['-pdf', '-interaction=nonstopmode', '-outdir=build', 'main.tex'];
-  const result = await runLatexmk(project, args);
+  const result = await runLatexmkWithRecovery(project);
   const logText = result.logText;
   const issues = parseLatexLog(logText);
   const log = tailLines(logText, 220);
@@ -325,6 +331,29 @@ function runLatexmk(project, args) {
       finish();
     });
   });
+}
+
+async function runLatexmkWithRecovery(project) {
+  const result = await runLatexmk(project, LATEXMK_ARGS);
+  if (!shouldForceLatexmkRerun(result)) {
+    return result;
+  }
+
+  const retryNotice = '\nVibeLaTeX: latexmk reported a previous failed invocation; retrying once with -g.\n';
+  const retry = await runLatexmk(project, LATEXMK_FORCE_ARGS);
+
+  return {
+    ...retry,
+    logText: `${result.logText}${retryNotice}${retry.logText}`,
+  };
+}
+
+function shouldForceLatexmkRerun(result) {
+  if (!result || result.exitCode === 0 || result.spawnError) {
+    return false;
+  }
+
+  return /gave an error in previous invocation of latexmk/i.test(result.logText);
 }
 
 function parseLatexLog(logText) {
@@ -427,8 +456,8 @@ server.on('error', (error) => {
 
 ensureWorkspace()
   .then(() => {
-    server.listen(PORT, () => {
-      console.log(`VibeLaTeX running at http://localhost:${PORT}`);
+    server.listen(PORT, HOST, () => {
+      console.log(`VibeLaTeX running at http://${HOST}:${PORT}`);
     });
   })
   .catch((error) => {

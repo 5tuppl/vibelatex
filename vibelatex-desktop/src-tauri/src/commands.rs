@@ -447,8 +447,46 @@ async fn compile_project(app: AppHandle, project_path: PathBuf) {
 }
 
 fn run_latexmk_blocking(app: AppHandle, project_path: PathBuf) -> Result<LatexmkRun, String> {
-    let mut child = Command::new("latexmk")
-        .current_dir(&project_path)
+    let run = run_latexmk_once(app.clone(), &project_path, false)?;
+    if !should_force_latexmk_rerun(&run) {
+        return Ok(run);
+    }
+
+    let retry_notice =
+        "VibeLaTeX: latexmk reported a previous failed invocation; retrying once with -g."
+            .to_string();
+    let _ = app.emit(
+        "compile-log",
+        CompileLogPayload {
+            line: retry_notice.clone(),
+        },
+    );
+
+    let retry = run_latexmk_once(app, &project_path, true)?;
+    let mut log = run.log;
+    log.push(retry_notice);
+    log.extend(retry.log);
+
+    Ok(LatexmkRun {
+        exit_code: retry.exit_code,
+        success: retry.success,
+        log,
+        message: retry.message,
+    })
+}
+
+fn run_latexmk_once(
+    app: AppHandle,
+    project_path: &Path,
+    force: bool,
+) -> Result<LatexmkRun, String> {
+    let mut command = Command::new("latexmk");
+    command.current_dir(project_path);
+    if force {
+        command.arg("-g");
+    }
+
+    let mut child = command
         .args([
             "-pdf",
             "-outdir=build",
@@ -524,6 +562,14 @@ fn run_latexmk_blocking(app: AppHandle, project_path: PathBuf) -> Result<Latexmk
         log,
         message,
     })
+}
+
+fn should_force_latexmk_rerun(run: &LatexmkRun) -> bool {
+    !run.success
+        && run.log.iter().any(|line| {
+            line.to_ascii_lowercase()
+                .contains("gave an error in previous invocation of latexmk")
+        })
 }
 
 fn spawn_log_reader<R>(reader: R, tx: mpsc::Sender<String>) -> thread::JoinHandle<()>
